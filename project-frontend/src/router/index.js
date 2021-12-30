@@ -1,16 +1,21 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import HelloWorld from "../components/HelloWorld";
+import Vue from 'vue';
+import Router from 'vue-router';
 import auth from "../pages/auth/auth";
-// import user from "../pages/user/user";
-import Verified from "../components/Verified";
-Vue.use(Router)
+import user from "../pages/user/user";
+import Home from "../pages/Home";
+Vue.use(Router);
 
 export default new Router({
   mode: 'history',
   routes: [
-    { path: '/', name: 'HelloWorld', components: HelloWorld },
-    {path: '/verify', name:'Verified',component: Verified },
+
+    {
+
+      path: '/',
+      name: 'Home',
+      component: Home
+    },
     ...auth,
+    ...user,
   ]
-})
+});

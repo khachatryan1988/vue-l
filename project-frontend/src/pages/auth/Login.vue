@@ -55,13 +55,6 @@
                   Log in
                 </b-button>
               </div>
-              <div class="mt-2 mb-35">
-            <span class="mr-1 fs-14 font-weight-bold">Forgot Password?
-                <button class="link-button fs-14">
-                    Restore
-                </button>
-            </span>
-              </div>
             </b-form>
           </ValidationObserver>
           <div class="text-center pb-90">
@@ -81,13 +74,11 @@
 
 <script>
 import {ValidationProvider, ValidationObserver} from "vee-validate"
-import axios from 'axios'
 export default {
   components: {
     ValidationProvider,
     ValidationObserver,
   },
-
   data() {
     return {
       login_form: {
@@ -100,40 +91,24 @@ export default {
     async login() {
       let valid = await this.$refs.login_observer.validate();
       if (!valid) return false;
-      this.$store.dispatch('LOGIN_USER', this.login_form)
-      .then(res => {
-        console.log(res)
-
-      })
-      .catch(error => {
+      this.$store.dispatch('loginUser', this.login_form).then(res => {
+        if (res) {
+          this.$router.push({
+            name: 'Profile'
+          })
+        }
+      }).catch(error => {
         console.log(error)
       })
-
     },
   }
 }
 </script>
 
 <style scoped>
-
-.cross {
-  width: 24rem;
-}
-
 .login-header {
   margin: 0 15.5rem 4rem;
 }
-
-.pass-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.login-modal {
-  height: 61rem;
-}
-
 .link-button {
   background: none !important;
   border: none;
@@ -142,5 +117,4 @@ export default {
   text-decoration: underline;
   cursor: pointer;
 }
-
 </style>

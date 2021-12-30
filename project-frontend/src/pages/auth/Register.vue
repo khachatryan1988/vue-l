@@ -2,7 +2,7 @@
   <div>
     <b-container>
       <b-row>
-        <b-col class="mt-3" cols="12">
+        <b-col class="mt-3" cols="8">
           <h3 class="text-center">Register</h3>
           <ValidationObserver ref="register_observer">
             <b-form @submit.prevent="registerUser">
@@ -57,8 +57,8 @@
 </template>
 
 <script>
+import axios from "axios";
 import {ValidationObserver, ValidationProvider} from "vee-validate";
-
 export default {
   name: "BootstrapForm",
   components: {
@@ -76,17 +76,17 @@ export default {
     async registerUser() {
       let valid = await this.$refs.register_observer.validate();
       if (!valid) return false;
-
-          this.$store.dispatch('REGISTER_USER' , this.form)
-
-          .then(res => {
+      this.$store
+        .dispatch('register_User', this.form)
+        .then(res => {
+          if (res) {
             alert(res.message)
-            if(res){
-              this.$router.push({name: "login"})
-            }
-          })
-          .catch(error => {console.log(error)})
-
+            this.$router.push({name: "Login"});
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
   }
 };

@@ -2,59 +2,81 @@ import axios from "axios";
 
 export default {
   state: {
-    user : {},
-    token : '',
+    user: {},
+    token: localStorage.getItem('accessToken') || null,
   },
   mutations: {
-    setUserData(state,data){
-
+    setUserData(state, data) {
+      state.user = data;
     },
-    setToken(state,data){
-      localStorage.setItem('access_token', data)
+    setToken(state, data) {
+      localStorage.setItem('accessToken', data);
     }
   },
-  getters: {},
+  getters: {
+    isLoggedIn: function (state) {
+      return !!state.token;
+    },
+    getUserData(state) {
+      return state.user
+    }
+  },
   actions: {
-    LOGIN_USER(context, data) {
+    loginUser(context, data) {
       return new Promise((resolve, reject) => {
         axios.post('/auth/login', data)
           .then(res => {
-            if(res.status === 200){
-              context.commit('setToken', res.data.access_token)
+            if (res.status === 200) {
+              context.commit('setToken', res.data.accessToken);
+              resolve(res);
             }
           })
           .catch(error => {
-            console.log(error)
+            reject(error);
           })
       })
     },
-
-    REGISTER_USER(context, data) {
-      console.log(data, 'store')
+    logoutUser(context, data) {
       return new Promise((resolve, reject) => {
-        axios.post('/auth/registration', data)
+        axios.post('/auth/logout', data)
+          .then(res => {
+            if (res.status === 200) {
+              context.commit('setToken', '')
+              context.commit('setUserData', {})
+              resolve(true)
+            }
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    register_User(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post('/register', data)
           .then((res) => {
             if (res.status === 200) {
               resolve(res.data);
             }
           })
           .catch(error => {
-            console.log(error)
+            reject(error)
           })
       })
     },
-    GET_USER(context){
+    getUser(context) {
       return new Promise((resolve, reject) => {
-
         axios.post('/auth/me')
           .then(res => {
-            console.log(res)
+            if (res.status === 200) {
+              context.commit('setUserData', res.data)
+              resolve(true)
+            }
           })
           .catch(error => {
-            console.log(error)
+            reject(error)
           })
       })
-    }
+    },
   }
-
 }

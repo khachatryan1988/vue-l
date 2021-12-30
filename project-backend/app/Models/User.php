@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -22,7 +21,6 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'verification_token',
     ];
 
     /**
@@ -62,6 +60,29 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function sentFriendRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'user_id');
+    }
+
+    public function receivedFriendRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'target_user_id');
+    }
+
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'user_friend_references', 'user_id', 'friend_id')->withPivot('created_at');
+    }
+
+    /**
+     * Get the user type.
+     */
+    public function user_type()
+    {
+        return $this->belongTo(UserType::class);
     }
 
 }
