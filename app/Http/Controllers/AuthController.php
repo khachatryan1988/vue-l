@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Requests\UserRegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,21 +39,24 @@ class AuthController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function registration(Request $request)
+    public function register(UserRegisterRequest $request)
     {
         $ver_token = Str::random(128);
+        $email_verify = '';
 
         $credentials = [
             "name" => $request->get('name'),
             'email' => $request->get('email'),
             "password" => Hash::make($request->get('password')),
-            "verification_token" => $ver_token
+            "verification_token" => $ver_token,
+            "email_verified_at" => $email_verify
         ];
 
         $newUser = User::query()->create($credentials);
 
         if($newUser) {
-            $this->emailVerification($newUser, $ver_token);
+            $this->emailVerification($newUser, $ver_token,);
+            $this->verify($newUser->id);
             return response()->json(['message' => 'User Registered']);
         }
 
